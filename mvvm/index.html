@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
 </head>
+
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <div>{{title}}</div>
+    <div>{{content}}</div>
+  </div>
   <script src="./src/observe.js"></script>
+  <script src="./src/compile.js"></script>
+
   <script>
-  const obj = {
-    name: 'ranck',
-    message: 'hello ranck',
-    info: {
-      height: 168,
-      weight: 55,
+    const el = document.querySelector('#root')
+    const obj = {
+      name: 'ranck',
+      message: 'hello ranck',
+      info: {
+        height: 168,
+        weight: 55,
+      }
     }
-  }
 
-  const o = observe(obj)
+    const o = observe(obj)
 
 
-  obj.name = 'hehe'
-  obj.info.height = 333
+    obj.name = 'hehe'
+    obj.info.height = 333
+
+    node2Fragment(el)
+
   </script>
 </body>
+
 </html>
