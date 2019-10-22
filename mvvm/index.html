@@ -12,8 +12,18 @@
   <div id="root">
     <div>{{title}}</div>
     <div>{{content}}</div>
+    <div v-text="haha"></div>
+    <div on-click="handleClick"></div>
+
+    <div>
+      <ul>
+        <li>{{haha}}</li>
+      </ul>
+    </div>
   </div>
+
   <script src="./src/observe.js"></script>
+  <script src="./src/watcher.js"></script>
   <script src="./src/compile.js"></script>
 
   <script>
@@ -33,7 +43,20 @@
     obj.name = 'hehe'
     obj.info.height = 333
 
-    node2Fragment(el)
+    compile(el)
+
+    const w = watcher()
+    console.log(w)
+    w.on('hehe', function (message) {
+      console.log(message)
+    })
+    w.on('33', function (message) {
+      console.log(message)
+    })
+    w.emit('hehe', 1)
+    w.off('hehe')
+    w.emit('hehe', 19522)
+    w.emit('33', 19522)
 
   </script>
 </body>
