@@ -10,8 +10,8 @@
 
 <body>
   <div id="root">
-    <div>{{title}}</div>
-    <div>{{content}}</div>
+    <div>{{name}}</div>
+    <div>{{message}}</div>
     <div v-text="haha"></div>
     <div on-click="handleClick"></div>
 
@@ -25,6 +25,7 @@
   <script src="./src/observe.js"></script>
   <script src="./src/watcher.js"></script>
   <script src="./src/compile.js"></script>
+  <script src="./src/vue.js"></script>
 
   <script>
     const el = document.querySelector('#root')
@@ -37,26 +38,32 @@
       }
     }
 
-    const o = observe(obj)
+    // const o = observe(obj)
 
 
-    obj.name = 'hehe'
-    obj.info.height = 333
+    // obj.name = 'hehe'
+    // obj.info.height = 333
 
-    compile(el)
-
-    const w = watcher()
-    console.log(w)
-    w.on('hehe', function (message) {
-      console.log(message)
+    // compile(el)
+    new Vue({
+      el: document.querySelector('#root'),
+      data: {
+        name: 'ranck',
+        message: 'hello ranck',
+      }
     })
-    w.on('33', function (message) {
-      console.log(message)
-    })
-    w.emit('hehe', 1)
-    w.off('hehe')
-    w.emit('hehe', 19522)
-    w.emit('33', 19522)
+    // const w = watcher()
+    // console.log(w)
+    // w.on('hehe', function (message) {
+    //   console.log(message)
+    // })
+    // w.on('33', function (message) {
+    //   console.log(message)
+    // })
+    // w.emit('hehe', 1)
+    // w.off('hehe')
+    // w.emit('hehe', 19522)
+    // w.emit('33', 19522)
 
   </script>
 </body>
