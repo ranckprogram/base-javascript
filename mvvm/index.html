@@ -13,7 +13,7 @@
     <div>{{name}}</div>
     <div>{{message}}</div>
     <div v-text="haha"></div>
-    <div on-click="handleClick"></div>
+    <div on-click="handleClick">onclick</div>
 
     <div>
       <ul>
@@ -50,6 +50,11 @@
       data: {
         name: 'ranck',
         message: 'hello ranck',
+      },
+      methods: {
+        handleClick() {
+          console.log('click')
+        }
       }
     })
     // const w = watcher()

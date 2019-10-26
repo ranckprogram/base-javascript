@@ -27,7 +27,7 @@ function compileElements (vNode, vm) {
 
   Array.from(vNode.childNodes).forEach(node => {
     if (isElement(node)) {
-      compile(node, vm)
+      compileNode(node, vm)
     } else if (isText(node)) {
       let text = node.textContent
       if (reg.test(text)) {
@@ -36,12 +36,32 @@ function compileElements (vNode, vm) {
         compileText(node, getDataValue(vm, text));
       }
     } else if (isAttr(node)) {
-      console.log(node)
 
     }
-    console.log(node)
 
   })
+}
+
+function compileNode (node, vm) {
+  console.log(node.attributes)
+  const attrs = node.attributes;
+
+  Array.from(attrs).forEach(attr => {
+    const attrName = attr.name;
+    const attrValue = attr.value;
+    var dirs = attrName.split('-');
+    if (dirs[0] === 'v') {
+
+    }
+    if (dirs[0] === 'on') {
+      console.log(dirs[1])
+      const eventName = dirs[1];
+      eventHandler(node, eventName, attrValue, vm)
+    }
+    node.removeAttribute(attrName);
+
+  })
+
 }
 
 function isElement (node) {
@@ -49,7 +69,7 @@ function isElement (node) {
 }
 
 function isAttr (node) {
-  
+
   return node.nodeType === 2
 }
 
@@ -75,4 +95,15 @@ function compileText (node, value) {
 
 function getDataValue (vm, exp) {
   return vm._data[exp]
+}
+
+
+function eventHandler (node, eventName, method, vm) {
+  console.log(vm)
+  try {
+    node.addEventListener(eventName, vm.$options.methods[method], false);
+
+  } catch (e) {
+    console.error(e)
+  }
 }
