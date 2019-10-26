@@ -28,38 +28,37 @@ function compileElements (vNode, vm) {
   Array.from(vNode.childNodes).forEach(node => {
     if (isElement(node)) {
       compileNode(node, vm)
-    } else if (isText(node)) {
+    }
+
+    if (node.childNodes && node.childNodes.length) {
+      compileElements(node, vm)
+    }
+
+    if (isText(node)) {
       let text = node.textContent
       if (reg.test(text)) {
-        text = RegExp.$1 //缓存最近一次的正则里面的值;
-        //调用方法编译
-        compileText(node, getDataValue(vm, text));
+        temp = RegExp.$1
+        compileText(node, getDataValue(vm, temp));
       }
-    } else if (isAttr(node)) {
-
     }
 
   })
 }
 
 function compileNode (node, vm) {
-  console.log(node.attributes)
   const attrs = node.attributes;
-
   Array.from(attrs).forEach(attr => {
     const attrName = attr.name;
     const attrValue = attr.value;
     var dirs = attrName.split('-');
     if (dirs[0] === 'v') {
-
+      compileText(node, getDataValue(vm, attrValue))
     }
     if (dirs[0] === 'on') {
-      console.log(dirs[1])
       const eventName = dirs[1];
       eventHandler(node, eventName, attrValue, vm)
     }
     node.removeAttribute(attrName);
-
   })
 
 }
@@ -99,11 +98,14 @@ function getDataValue (vm, exp) {
 
 
 function eventHandler (node, eventName, method, vm) {
-  console.log(vm)
   try {
-    node.addEventListener(eventName, vm.$options.methods[method], false);
-
+    const theMethod = vm.$options.methods[method]
+    node.addEventListener(eventName, theMethod.bind(vm), false);
   } catch (e) {
     console.error(e)
   }
+}
+
+function directHandler () {
+
 }
