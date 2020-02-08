@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+
+        function Node(value) {
+            this.next = null
+            this.value = value
+        }
+
+        function List() {
+            this.head = new Node('head')
+            this.length = 1
+            this.last = this.head
+        }
+
+        List.prototype.append = function (node) {
+            this.last.next = node
+            this.last = node
+            this.length = this.length + 1
+        }
+
+        List.prototype.find = function (value) {
+            let current = this.head
+            while (current.value !== value) {
+                current = current.next
+            }
+            return current
+        }
+
+        List.prototype.insert = function (newNode, targetNode) {
+            const current = this.find(targetNode)
+            newNode.next = current.next
+            current.next = newNode
+            this.length = this.length + 1
+        }
+
+
+        List.prototype.delete = function (value) {
+            const current = this.head
+            while () {
+                if (current.value === value) {
+
+                }
+
+            }
+            return current
+        }
+
+        const list = new List()
+
+        list.append(new Node('1'))
+        list.append(new Node('2'))
+        // list.insert(new Node('2'), '1')
+
+
+        console.log(list)
+        console.log(list.find('1'))
+
+    </script>
+</body>
+
+</html>
