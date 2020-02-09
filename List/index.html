@@ -32,8 +32,21 @@
             let current = this.head
             while (current.value !== value) {
                 current = current.next
+                if (current === null) {
+                    return null
+                }
             }
             return current
+        }
+
+        List.prototype.prev = function (value) {
+            let current = this.head
+            let prev = null
+            while (current.value !== value) {
+                prev = current
+                current = current.next
+            }
+            return prev
         }
 
         List.prototype.insert = function (newNode, targetNode) {
@@ -45,25 +58,23 @@
 
 
         List.prototype.delete = function (value) {
-            const current = this.head
-            while () {
-                if (current.value === value) {
-
-                }
-
-            }
-            return current
+            const prev = this.prev(value)
+            const target = prev.next
+            prev.next = prev.next.next
+            return target
         }
 
         const list = new List()
 
         list.append(new Node('1'))
         list.append(new Node('2'))
-        // list.insert(new Node('2'), '1')
+        list.insert(new Node('2'), '1')
 
-
+        list.delete('1')
         console.log(list)
+        list.find('1')
         console.log(list.find('1'))
+
 
     </script>
 </body>
