@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <script>
+
+    var data = [{
+      name: 'ranck',
+      age: 27
+    }, {
+      name: 'ranck',
+      age: 22
+    }, {
+      name: 'rer',
+      age: 33
+    }, {
+      name: 'rthrth',
+      age: 12
+    }, {
+      name: 'erte',
+      age: 654
+    }, {
+      name: 'yyer',
+      age: 23
+    }]
+
+    var dataProxy = new Proxy(data, {
+      get(obj, prop, value) {
+        console.log(obj, prop, value)
+
+        // 自定义属性
+        switch (prop) {
+          case 'number':
+          case 'length':
+          case 'len':
+            return obj.length
+          case 'self':
+            return obj
+          default: break;
+        }
+
+        if (prop in obj) {
+          return obj[prop]
+        }
+
+        let result = []
+
+        for (const person in obj) {
+          if (obj[person]?.name === prop) {
+            result.push(obj[person])
+          }
+        }
+
+        return result
+
+      }
+
+    })
+
+
+    dataProxy.name
+    // console.log(dataProxy, dataProxy.number, dataProxy.len, dataProxy.self, dataProxy[1])
+    console.log(dataProxy['ranck'])
+
+  </script>
+</body>
+
+</html>
