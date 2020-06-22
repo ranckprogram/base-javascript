@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      /* overflow: hidden; */
+    }
+
+    .canvas {
+      /* height: 100vh;
+      width: 100vw; */
+      display: block;
+      /* border: 1px solid #ddd; */
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="canvas" class="canvas"></canvas>
+
+  <script>
+    // 我现在由两种编程思路，数据驱动，或者 构建者方式（对象耦合可能有点大）
+
+    // 考虑到动画的情况，canvas 擦除后重新绘制是必然的，但是重新绘制的数据需要保留，所以使用数据驱动思想是必然的
+
+    // 元素要考虑堆叠的问题
+
+    function Line([x, y, width, height, lineWidth, animate]) {
+      // 校验 + 返回结构化数据
+
+      return [x, y, width, height, lineWidth, animate]
+    }
+
+
+    Line.install = function (p, options) {
+      p.prototype.$drawLine = function (ctx, [startx, starty, endx, endy, color, width]) {
+        ctx.beginPath();
+        ctx.moveTo(startx, starty);
+        ctx.lineTo(endx, endy);
+        ctx.strokeStyle = color
+        ctx.lineWidth = width
+        ctx.stroke();
+      }
+    }
+
+
+
+    function People() {
+      this.x = x;
+      this.y = y;
+
+      this.color = color;
+
+
+    }
+
+
+    /**
+     * 生成布局
+     * @param arr {Array}
+     * 
+    */
+    function layout(arr, options) {
+      // 假定 arr 是 二维数组，
+
+    }
+    layout()
+
+    function Paper() {
+      // 元素类型必然不止一种，所有这里我才用map存放
+
+      this.elements = Paper.elements
+
+      this.background = "#333"
+
+      this.renderTimes = 0 // 渲染次数
+
+      this.init();
+
+    }
+
+    Paper.elements = {}
+
+
+    // 怎么集成第三方 插件，额外插件 ctx 应该很重要； 
+
+    Paper.use = function () {
+
+
+      const [plugin, options] = [...arguments]
+
+      // for (let i in plugins.prototype) {
+      //   this.prototype[i] = plugins.prototype[i]
+      // }
+
+      console.dir(plugin)
+      console.log("plugin", this)
+      const self = this
+
+      plugin.install.apply(plugin, [self, ...arguments])
+
+      Paper.elements[options] = []
+
+      return this
+    }
+
+
+    Paper.prototype.init = function () {
+      const clientHeight = this.height = document.documentElement.clientHeight
+      const clientWidth = this.width = document.documentElement.clientWidth
+      const canvas = document.querySelector("#canvas")
+      canvas.width = clientWidth
+      canvas.height = clientHeight
+
+      const ctx = this.ctx = canvas.getContext("2d")
+
+      ctx.fillStyle = this.background
+      ctx.fillRect(0, 0, clientWidth, clientHeight)
+
+      console.log(ctx)
+
+    }
+
+    Paper.prototype.clear = function () {
+      this.ctx.fillRect(0, 0, this, width, this.height)
+
+    }
+
+    Paper.prototype.render = function () {
+
+      console.log(this.elements, this)
+      this.renderTimes += 1
+
+
+
+      for (let type in this.elements) {
+
+        this.elements[type].forEach(item => {
+          this.$drawLine(this.ctx, item)
+        })
+      }
+
+      // requstAnimateFrame( 必然创建时间对象) 递归 还是要开启 动画参数  ？ ？ 或者通过 事件触发， 埋点回调，
+    }
+
+    Paper.prototype.draw = function () {
+      this.init()
+      this.render()
+    }
+
+    Paper.prototype.add = function (type, data) {
+      if (this.elements[type]) {
+        this.elements[type].push(data)
+      } else {
+        // this.elements[type] = [data]
+        throw `[Error],no found plugin "${type}", please import`
+      }
+
+
+      this.render()
+    }
+
+
+
+
+
+    // 插件需要做的事情是 定义函数，定义数据结构
+
+
+
+
+    // 事件 
+    /**
+     * 缩放
+     * 点击
+     * 聚焦
+    */
+
+    Paper.use(Line, "lines")
+
+    const paper = new Paper()
+
+
+    // 怎么做出队列 达到批量的效果？？ 暂时可以不用实现，但是可以考虑
+
+
+
+    paper.add("lines", new Line([100, 100, 800, 100, "#fff", 2]))
+    paper.add("lines", new Line([100, 200, 800, 200, "#fff", 2]))
+    paper.add("lines", new Line([100, 300, 800, 300, "#fff", 2]))
+    paper.add("lines", new Line([100, 400, 800, 100, "#fff", 2]))
+
+    console.dir(Paper)
+    console.log("paper", paper)
+
+
+    const proxy = new Proxy(paper, {
+      set(obj, prop, value) {
+        console.log(obj, prop, value)
+        obj[prop] = value;
+        paper.draw() // 这里的调用可以更小颗粒化
+        return value
+      }
+    })
+
+    paper.proxy = proxy
+
+    window.paper = paper
+    window.proxy = proxy
+
+  </script>
+</body>
+
+</html>
