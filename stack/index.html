@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <script>
+    // 栈， 先进后出
+
+    const stack = []
+
+
+
+    let str = "1+2"
+
+    const operatorMap = {
+      '+': add,
+      '=': get
+
+    }
+
+    function add(a, b) {
+      return a + b
+    }
+
+    function get() {
+
+    }
+
+    function execute(str) {
+
+      let i = 0
+      while (str.length > i) {
+        console.log(str, str.charAt(i))
+        stack.push(str.charAt(i))
+        i++
+      }
+    }
+
+    execute(str)
+
+    console.log(stack, stack.pop(), stack)
+
+  </script>
+</body>
+
+</html>
