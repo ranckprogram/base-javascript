@@ -38,7 +38,8 @@
 
       map.plugin(["AMap.GltfLoader"], function () {
         var urlCity = 'https://a.amap.com/jsapi_demos/static/gltf-online/shanghai/scene.gltf';
-        var urlDuck = 'https://a.amap.com/jsapi_demos/static/gltf/Duck.gltf';
+        // var urlDuck = 'https://a.amap.com/jsapi_demos/static/gltf/Duck.gltf';
+        var urlDuck = './64.gltf';
         var paramCity = {
           position: new AMap.LngLat(121.510909, 31.233366), // 必须
           scale: 3580, // 非必须，默认1
@@ -48,26 +49,28 @@
 
         var paramDuck = {
           position: new AMap.LngLat(104.065806, 30.657468), // 必须
-          scale: 800, // 非必须，默认1
+          scale: 700, // 非必须，默认1
           height: -100,  // 非必须，默认0
           scene: 0, // 非必须，默认0
         };
 
         var gltfObj = new AMap.GltfLoader();
 
-        gltfObj.load(urlCity, function (gltfCity) {
-          cityMeshes = gltfCity;
-          gltfCity.setOption(paramCity);
-          gltfCity.rotateX(90);
-          gltfCity.rotateZ(120);
-          object3Dlayer.add(gltfCity);
-        });
+        // gltfObj.load(urlCity, function (gltfCity) {
+        //   cityMeshes = gltfCity;
+        //   gltfCity.setOption(paramCity);
+        //   gltfCity.rotateX(90);
+        //   gltfCity.rotateZ(120);
+        //   object3Dlayer.add(gltfCity);
+        // });
 
         gltfObj.load(urlDuck, function (gltfDuck) {
+
+          console.log(gltfDuck, "gltfDuck")
           druckMeshes = gltfDuck;
           gltfDuck.setOption(paramDuck);
           gltfDuck.rotateX(90);
-          gltfDuck.rotateZ(-20);
+          gltfDuck.rotateZ(90);
           object3Dlayer.add(gltfDuck);
         });
 
@@ -112,43 +115,32 @@
     console.log(scene, "scene")
     console.log(THREE, "THREE")
 
+    console.log(AMap, "AMap")
+
 
     var geometry = new THREE.BoxGeometry(1, 1, 1);
     var material = new THREE.MeshBasicMaterial({ color: 0xff8866 });
     var cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
-
-    // console.log(cube, "cube")
-    // scene.add(map);
+    scene.add(cube);
 
 
     camera.position.z = 5;
 
 
 
-    // amap
+    console.log(cube, "cube")
+    console.log(scene, "scene");
+    console.log(scene.toJSON())
 
 
-    let pointLabel = new THREE.WebGLRenderer(container);
 
-
-    console.log(cube, pointLabel)
-    // pointLabel.position.set(x, y, z);
-    // scene.add(pointLabel);
-
-    // const mapImage = map.getScreenShot();
-    // const texture = new THREE.TextureLoader().load(mapImage);
-    // texture.wrapS = THREE.RepeatWrapping;
-    // texture.wrapT = THREE.RepeatWrapping;
-    // texture.repeat.set(4, 4);
-
-    // function animate() {
-    //   requestAnimationFrame(animate);
-    //   cube.rotation.x += 0.01;
-    //   cube.rotation.y += 0.01;
-    //   renderer.render(scene, camera);
-    // }
-    // animate();
+    function animate() {
+      requestAnimationFrame(animate);
+      // cube.rotation.x += 0.01;
+      // cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
 
   </script>
 </body>
