@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <canvas id="canvas"></canvas>
+  <div>
+    <video id="video" controls width="300" height="90" src="https://www.w3school.com.cn/i/movie.ogg"></video>
+  </div>
+  <script>
+    var canvas = document.getElementById("canvas")
+    var ctx = canvas.getContext('2d')
+    var video = document.getElementById("video")
+    canvas.width = video.width
+    canvas.height = video.height
+    video.onloadeddata = () => {
+      console.dir(video)
+
+      animate()
+    }
+    let i = 0;
+    let num;
+    function animate() {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      console.log(i++, num)
+      if (i === 50) {
+
+        window.cancelAnimationFrame(num)
+        return;
+      }
+      num = requestAnimationFrame(animate);
+    }
+  </script>
+</body>
+
+</html>
