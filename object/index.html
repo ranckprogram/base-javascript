@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <script>
+    let obj = {};
+
+
+    typeof obj
+
+
+    // 不可变性
+
+    const obj1 = {};
+
+    Object.defineProperty(obj1, "a", {
+      value: 1,
+      configurable: false,  // 禁止删除
+      enumberable: false,
+      writable: false
+    });
+
+    Object.preventExtensions(obj1) // 阻止拓展
+
+    console.log(Object.getOwnPropertyDescriptor(obj1, "a"))
+
+
+    const obj2 = { a: 1, b: 2 }
+
+    // Object.create({}, {
+    //   a: {
+    //     value: "a"
+    //   },
+    //   b: {
+    //     value: "b"
+    //   }
+    // })
+
+
+
+    Object.seal(obj2)  //  不可删,不可增,  只可以写
+    console.log(Object.getOwnPropertyDescriptors(obj2))
+
+    Object.freeze(obj2)  // 不可删,不可增,不可改
+
+  </script>
+</body>
+
+</html>

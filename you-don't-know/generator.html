@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <script>
+    let x = 1;
+
+    function* foo() {
+      x++;
+      yield;
+      console.log("x", x)
+    }
+
+
+    function bar() {
+      x++;
+    }
+
+
+    var it = foo();
+    // 这里启动foo()！
+    it.next();
+    console.log(x); // 2 
+    bar();
+    console.log(x); // 3 
+    it.next();
+
+  </script>
+</body>
+
+</html>
