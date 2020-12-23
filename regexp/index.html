@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <script>
+
+    let domainReg = /^(?=^.{1,255}$)([a-zA-Z0-9][-a-zA-Z0-9]{0,62}|[*])(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})*(\.?)$/;
+
+
+    let arr = [{
+      str: "aa",
+      result: true
+    }, {
+      str: "aa.",
+      result: true
+    }, {
+      str: "aaa.aaa",
+      result: true
+    }, {
+      str: ".",
+      result: false
+    }, {
+      str: "aa.*",
+      result: false
+    }, {
+      str: "aa.*e",
+      result: false
+    }, {
+      str: "*.aa",
+      result: true
+    }, {
+      str: "_dd.ss",
+      result: false
+    }, {
+      str: "-ds.dd",
+      result: false
+    }, {
+      str: "sss-dd.com",
+      result: true
+    }, {
+      str: "sss_sss.sd",
+      result: false
+    }, {
+      str: "a..",
+      result: false
+    }, {
+      str: "a*a.com",
+      result: false
+    }, {
+      str: "a@a.com",
+      result: false
+    }, {
+      str: "*.com",
+      result: true
+    }, {
+      str: "*.",
+      result: true
+    }, {
+      str: "aa_",
+      result: false
+    }];
+
+
+    arr.forEach((item, index) => {
+      console.log(index, item.str, domainReg.test(item.str), item.result === domainReg.test(item.str) ? "通过" : "失败")
+    })
+
+
+
+  </script>
+</body>
+
+</html>
