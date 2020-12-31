@@ -9,12 +9,32 @@
 
 <body>
   <script>
-
+    // Function.prototype.call2 = function (obj, ...args) {
+    //   obj.fn = this;
+    //   return obj.fn(...args);
+    //   delete obj.fn;
+    // }
 
     Function.prototype.call2 = function (obj, ...args) {
       obj.fn = this;
-      return obj.fn(...args);
+
+      var params = [];
+      for (var i = 1; i < arguments.length; i++) {
+        params[i - 1] = arguments[i];
+      }
+
+      // 柯里化
+
+      for (var i = 0; i < args.length; i++) {
+        function dd() {
+
+          args[i]
+        }
+      }
+
+      var result = obj.fn(...args);
       delete obj.fn;
+      return result;
     }
 
     function fun() {
