@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <input type="file" name="path" id="file" onChange="fileChange()" />
+
+  <button onClick="handleUpload()">上传文件</button>
+  <script>
+    const url = "/upload";
+
+    function fileChange(file) {
+      console.log(file)
+    }
+
+
+
+    const file = document.querySelector("#file");
+
+    file.addEventListener("change", function (e) {
+      console.log(e.target.files[0])
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function onFileReadFinish() {
+        const base64 = reader.result;
+        console.log(base64)
+
+      }
+      reader.readAsArrayBuffer(file)
+    })
+
+    class DataBase {
+      databaseName = "file-upload";
+      version = 9527;
+      db = null;
+
+      constructor() {
+        this.text = "22"
+
+        this.create();
+      }
+
+      create() {
+        const request = window.indexedDB.open(this.databaseName, this.version);
+        request.onupgradeneeded = function (event) {
+          db = event.target.result;
+          var objectStore;
+          if (!db.objectStoreNames.contains('uploadfile')) {
+            objectStore = db.createObjectStore('uploadfile', { keyPath: 'id' });
+          }
+
+          console.log(objectStore)
+        }
+        request.onsuccess = function (event) {
+          let db = event.target.result;
+
+          console.log('数据库打开成功', db);
+          // this.db = db
+
+          // let objectStore;
+          // if (!db.objectStoreNames.contains('uploadfile')) {
+          //   objectStore = db.createObjectStore('uploadfile', { keyPath: 'id' });
+          // }
+
+        };
+
+        request.onupgradeneeded = (e) => {
+          this.db = e.target.result;
+          const storeName = "uploadfile"
+          if (!this.db.objectStoreNames.contains(storeName)) {
+            this.store = this.db.createObjectStore(storeName, { keyPath: 'key' });
+          }
+        }
+
+
+      }
+
+      add() {
+
+        const transaction = this.db.transaction(['uploadfile'], 'readwrite')
+        const objectStore = transaction.objectStore("students");
+        objectStore.add({ id: 1, name: '张三', age: 24, email: 'zhangsan@example.com' });
+
+        console.log(transaction, "transaction")
+        console.log(objectStore, "objectStore")
+
+        transaction.onsuccess = function (event) {
+          console.log('数据写入成功');
+        };
+
+        transaction.onerror = function (event) {
+          console.log('数据写入失败');
+        }
+
+
+      }
+
+    }
+
+    const dataBase = new DataBase();
+
+    console.log(dataBase)
+
+    setTimeout(() => {
+      dataBase.add()
+
+    }, 1000)
+
+
+    function handleUpload() {
+      console.dir(file)
+      const formdata = new FormData();
+      formdata.append("path", file.files[0])
+      fetch(url, {
+        body: formdata, // must match 'Content-Type' header
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, same-origin, *omit
+        // headers: {
+        //   'user-agent': 'Mozilla/4.0 MDN Example',
+        //   'content-type': 'application/json'
+        // },
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, cors, *same-origin
+        redirect: 'follow', // manual, *follow, error
+        referrer: 'no-referrer', // *client, no-referrer
+      })
+        .then(response => response.json()) // parses response to JSON
+    }
+
+  </script>
+</body>
+
+</html>
