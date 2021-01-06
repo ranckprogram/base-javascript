@@ -50,12 +50,12 @@ const api = {
   getName(cb) {
     setTimeout(() => {
       cb("ranck");
-    }, 100);
+    }, 1000);
   },
   getAge(cb) {
     setTimeout(() => {
       cb(27);
-    }, 200);
+    }, 2000);
   },
 };
 
@@ -66,3 +66,8 @@ asq
   .then((data) => {
     console.log(data);
   });
+
+
+setTimeout(() => {
+  asq.add("dd", api.getName)
+}, 500);
