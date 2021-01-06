@@ -74,4 +74,7 @@ console.log(4);
 
 ### promise 本质
 
-> 生产者消费之模式，new promise 和 then 中生产回调提供消费，then catch finally
+> 生产者消费之模式，new promise 和 then 中生产回调提供消费，then catch finally; 达到链式调用方式改善回调地狱的目的
+
+
+
