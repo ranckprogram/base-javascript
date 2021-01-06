@@ -13,14 +13,16 @@
   <input type="file" name="path" id="file" onChange="fileChange()" />
 
   <button onClick="handleUpload()">上传文件</button>
+
+
   <script>
+
+    let dbIndex = 0;
     const url = "/upload";
 
     function fileChange(file) {
       console.log(file)
     }
-
-
 
     const file = document.querySelector("#file");
 
@@ -58,35 +60,33 @@
 
           console.log(objectStore)
         }
+
         request.onsuccess = function (event) {
-          let db = event.target.result;
-
-          console.log('数据库打开成功', db);
-          // this.db = db
-
-          // let objectStore;
-          // if (!db.objectStoreNames.contains('uploadfile')) {
-          //   objectStore = db.createObjectStore('uploadfile', { keyPath: 'id' });
-          // }
-
+          console.log('数据库打开成功');
         };
 
         request.onupgradeneeded = (e) => {
           this.db = e.target.result;
           const storeName = "uploadfile"
           if (!this.db.objectStoreNames.contains(storeName)) {
-            this.store = this.db.createObjectStore(storeName, { keyPath: 'key' });
+            this.store = this.db.createObjectStore(storeName, { autoIncrement: true });
           }
         }
 
+        this.request = request;
 
       }
 
       add() {
 
-        const transaction = this.db.transaction(['uploadfile'], 'readwrite')
+        const db = this.request.result;
+
+        const transaction = db.transaction('uploadfile', 'readwrite')
+
+        console.log(transaction, 22)
+
         const objectStore = transaction.objectStore("students");
-        objectStore.add({ id: 1, name: '张三', age: 24, email: 'zhangsan@example.com' });
+        objectStore.add({ id: dbIndex++, name: '张三', age: 24, email: 'zhangsan@example.com' });
 
         console.log(transaction, "transaction")
         console.log(objectStore, "objectStore")
@@ -104,14 +104,64 @@
 
     }
 
-    const dataBase = new DataBase();
+    // const dataBase = new DataBase();
 
-    console.log(dataBase)
+    // console.log(dataBase)
+
+    // setTimeout(() => {
+    //   dataBase.add()
+
+    // }, 1000)
+
+
+    const databaseName = "dbaa";
+    const version = 2;
+
+    const request = window.indexedDB.open(databaseName, version);
+    request.onupgradeneeded = function (event) {
+      db = event.target.result;
+      var objectStore;
+      if (!db.objectStoreNames.contains('uploadfile')) {
+        objectStore = db.createObjectStore('uploadfile', { keyPath: 'id' });
+      }
+
+      console.log(objectStore)
+    }
+
+    request.onsuccess = function (event) {
+      console.log('数据库打开成功');
+    };
+
+    request.onupgradeneeded = (e) => {
+      this.db = e.target.result;
+      const storeName = "uploadfile"
+      if (!this.db.objectStoreNames.contains(storeName)) {
+        this.store = this.db.createObjectStore(storeName, { autoIncrement: true });
+      }
+    }
+
 
     setTimeout(() => {
-      dataBase.add()
+      const db = request.result;
 
-    }, 1000)
+      const transaction = db.transaction('uploadfile', 'readwrite')
+
+      console.log(transaction, 22)
+
+      const objectStore = transaction.objectStore("uploadfile");
+      objectStore.add({ id: dbIndex++, name: '张三', age: 24, email: 'zhangsan@example.com' });
+
+      console.log(transaction, "transaction")
+      console.log(objectStore, "objectStore")
+
+      transaction.onsuccess = function (event) {
+        console.log('数据写入成功');
+      };
+
+      transaction.onerror = function (event) {
+        console.log('数据写入失败');
+      }
+    }, 500)
 
 
     function handleUpload() {
