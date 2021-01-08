@@ -1,5 +1,3 @@
-import base from "./base";
-
 const PROMISE_STATE_ENUM = {
   PEDDING: "pendding",
   FULFILLED: "fulfilled", // 成功

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <Button onclick="handleClick(6626, '9527')">============</Button>
+  <script>
+
+    function debounce(fn, time) {
+      var timer = null;
+      console.log(this)
+
+      return (...arg) => {
+        console.log(this)
+
+        if (timer) { clearTimeout(timer) }
+        timer = setTimeout(fn.bind(this, ...arg), time);
+      }
+    }
+
+    function getData(...data) {
+      console.log(1, ...data)
+    }
+
+    let o = {
+      name: "o",
+      debounce
+    }
+
+    const handleClick = o.debounce(getData, 1000)
+
+  </script>
+</body>
+
+</html>
