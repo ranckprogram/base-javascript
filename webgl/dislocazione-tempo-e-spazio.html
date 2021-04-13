@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <script src="https://cdn.bootcss.com/three.js/92/three.js"></script>
+
+
+  <script>
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+
+
+    function addBall(x, y, z) {
+
+      var geometry = new THREE.SphereGeometry(4, 10, 10);
+      var material = new THREE.MeshLambertMaterial({ color: 0x4470FF });
+      var mesh = new THREE.Mesh(geometry, material);
+
+      // var text = new THREE.TextGeometry("hello text", {
+      //   size: 20
+      // });
+
+      // scene.add(text)
+      // addBallValue(mesh)
+
+      // moveMesh(mesh)
+
+
+      mesh.position.x = x
+      mesh.position.y = y
+      mesh.position.z = z
+
+      mesh.name = "ball"
+      scene.add(mesh);
+
+
+    }
+
+
+    var light = new THREE.PointLight(0xf8f8f8, 5, 500);
+    light.position.set(0, 50, 100);
+    scene.add(light);
+
+
+
+
+    function createText(w, h, textValue, fontColor) {
+      let canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';//textBackground;
+      ctx.fillRect(0, 0, w, h);
+      ctx.font = h + "px '微软雅黑'";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = fontColor;
+      ctx.fillText(textValue, w / 2, h / 2 + 3);
+      return canvas;
+
+    }
+
+    function addBallValue(mesh,) {
+      console.log(mesh)
+      const { position } = mesh
+
+      const canvas = createText(20 * 5, 20, "你好dddd", "#f80");
+
+
+
+      let texture = new THREE.Texture(canvas);
+      texture.needsUpdate = true;
+      //创建精灵，将该材质赋予给创建的精灵
+      let spriteMaterial = new THREE.PointsMaterial({
+        map: texture,
+        sizeAttenuation: true,
+        size: 20,
+        transparent: true,
+        opacity: 1,
+      });
+      //创建坐标点，并将材质给坐标
+      let geometry = new THREE.BufferGeometry();
+      let vertices = [0, 0, 0];
+      geometry.addAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+      let sprite = new THREE.Points(geometry, spriteMaterial);
+      sprite.position.set(position.x, position.y, position.z);
+      scene.add(sprite);
+
+
+
+    }
+
+    function addFloor() {
+      
+      const width = 1000;
+      var geometry = new THREE.PlaneGeometry(width, 1.7937 * width);
+
+      const texture = addFloorTexture();
+
+
+      var material = new THREE.MeshBasicMaterial({ color: 0xdddddd, side: THREE.DoubleSide, map: texture }); //map: texture
+      var plane = new THREE.Mesh(geometry, material);
+
+
+      plane.rotation.z = 0
+
+      plane.rotation.x = 90
+
+      plane.position.y = -80
+      plane.position.x = 180
+      // plane.position.z = -80
+
+      scene.add(plane);
+    }
+
+
+
+    function addFloorTexture() {
+      var textureLoader = new THREE.TextureLoader();
+
+      var texture = new THREE.TextureLoader().load("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fs9.rr.itc.cn%2Fr%2FwapChange%2F20173_31_10%2Fa9uf1c0759639695542.jpg&refer=http%3A%2F%2Fs9.rr.itc.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1619964451&t=4fda1acb4f33cc0c81a7c07e535dfda5");
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      // texture.repeat.set(533, 300, 40);
+      return texture
+    }
+
+
+    function addLine(startPoint, endPoint) {
+
+
+      var lineOpt = {
+        color: 0x8EAAD4,
+
+        linewidth: 1,
+        scale: 1,
+        dashSize: 300,
+        gapSize: 1,
+      };
+
+      // const material = new THREE.LineBasicMaterial({
+      //   color: 0x0000ff
+      // });
+
+      const material = new THREE.LineDashedMaterial(lineOpt)
+      const points = [];
+      points.push(new THREE.Vector3(startPoint.x, startPoint.y, startPoint.z));
+      points.push(new THREE.Vector3(endPoint.x, endPoint.y, endPoint.z));
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+      const line = new THREE.Line(geometry, material);
+      scene.add(line);
+    }
+
+    addBall(0, 0, 0);
+
+
+
+    // addFloor();
+
+
+    // for (let i = 0; i < 10; i++) {
+    //   const x = (Math.random() - 0.5) * 100;
+    //   const y = (Math.random() - 0.5) * 100;
+    //   let z = Math.random() * 300 + 20;
+    //   if (i < 10) {
+    //     z = 20
+    //   }
+    //   addBall(x, y, -z);
+
+    // }
+    const r = 50;
+    const z = 300;
+    let positionList = []
+    for (let i = 0; i < 10; i++) {
+      const x = Math.sin(2 * Math.PI / 12 * i) * r;
+      const y = Math.cos(2 * Math.PI / 12 * i) * r;
+      const z = (i+1) * 10
+      positionList.push(x, y, z)
+      addBall(x, y, -z);
+      // addLine({ x: x/2, y: y/2, z: -300 }, { x, y, z: -z })
+
+    }
+
+
+
+
+    camera.position.z = 60;
+    // renderer.render(scene, camera);
+
+
+
+    console.log(scene)
+
+
+    function moveMesh(mesh) {
+      const positionKF = new THREE.VectorKeyframeTrack('.position', [0, 1, 2], [0, 0, 0, 30, 0, 0, 0, 0, 0]);
+
+      const opacityKF = new THREE.NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0, 1]);
+
+      // create an animation sequence with the tracks
+      // If a negative time value is passed, the duration will be calculated from the times of the passed tracks array
+      const clip = new THREE.AnimationClip('Action', 3, [positionKF, opacityKF]);
+
+      // setup the THREE.AnimationMixer
+      mixer = new THREE.AnimationMixer(mesh);
+
+      // create a ClipAction and set it to play
+      const clipAction = mixer.clipAction(clip);
+      clipAction.play();
+
+    }
+
+
+
+    function animate() {
+
+      // cube.rotation.x += 0.01;
+      // cube.rotation.y += 0.01;
+
+
+      // const ballList = scene.children.filter(item => item.name === "ball").forEach(item => {
+      //   item.rotation.y += 0.01;
+      // })
+
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+
+    function onMouseClick(event) {
+
+      //通过鼠标点击的位置计算出raycaster所需要的点的位置，以屏幕中心为原点，值的范围为-1到1.
+
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+      // 通过鼠标点的位置和当前相机的矩阵计算出raycaster
+      raycaster.setFromCamera(mouse, camera);
+
+      // 获取raycaster直线和所有模型相交的数组集合
+      var intersects = raycaster.intersectObjects(scene.children);
+
+      console.log(intersects);
+
+      //将所有的相交的模型的颜色设置为红色，如果只需要将第一个触发事件，那就数组的第一个模型改变颜色即可
+      for (var i = 0; i < intersects.length; i++) {
+
+        // intersects[i].object.material.color.set(0xff0000);
+
+        console.log(intersects[0])
+      }
+
+    }
+
+    window.addEventListener('click', onMouseClick, false);
+
+  </script>
+</body>
+
+</html>

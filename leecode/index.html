@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <button onclick="handleClick('a')">a</button>
+  <button onclick="handleClick('b')">b</button>
+
+  <script>
+    const result = [];
+    let count = 0;
+
+    function handleClick(type) {
+      if (type === 'a') {
+        result.unshift(type)
+      } else {
+        result.push(type)
+      }
+      if (++count > 2) {
+        console.log(result.join())
+      }
+    }
+
+
+  </script>
+
+
+</body>
+
+</html>
