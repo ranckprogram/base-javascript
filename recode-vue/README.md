@@ -2,25 +2,27 @@
 
 vue 初始化会创建 Vue 对象实例，在实例 mix，生命周期，编译 template（运行时），绑定时间，
 
+## 数据驱动
+
 ### 初始化
 
-new Vue() 主要调用 _init()方法
+new Vue() 主要调用 \_init()方法
 
 - 合并参数
 - 初始化生命周期
 - 初始化事件绑定
-- 初始化Render渲染
-- 执行beforeCreate生命周期
+- 初始化 Render 渲染
+- 执行 beforeCreate 生命周期
 - 初始化状态 state/props
-- 执行created生命周期
-- mount挂载
-
+- 执行 created 生命周期
+- mount 挂载
 
 ### 挂载
 
-- render
-- update
+mountComponent
 
+- \_render
+- \_update
 
 ### 模板编译过程
 
@@ -37,10 +39,11 @@ const code = generate(ast, options);
 template => ast => render 函数 => vNode => UI
 ```
 
-
-
+initRender 会调用 createElement， 生成 vNode
 
 怎么生成的抽象语法树，语法树怎么样的？
+
+抽象语法树中有没有存事件函数，怎么存的呢？
 
 ```javascript
 ast = {
@@ -102,21 +105,184 @@ ast = {
 }
 ```
 
-代码优化主要标记静态节点static，和静态节点的根staticRoot ，因为不是所有的template都需要数据绑定，响应式处理。减少响应式处理的内容
-
+代码优化主要标记静态节点 static，和静态节点的根 staticRoot ，因为不是所有的 template 都需要数据绑定，响应式处理。减少响应式处理的内容
 
 ##### generate
+
 - genIf
 - genFor
 - genData
 - genChildren
 
-### 组件化
+### 虚拟 dom 和真实 dom
 
-### 响应式过程
+DOM 对象，div 297 个属性，包含
+
+- 文本属性
+- 事件属性
+- dom 节点查找操作属性
+  - 位置偏移属性信息
+  - dom 节点属性的操作属性
+- 无障碍方面属性（38）
+- 常量信息
+
+虚拟 dom === vNode
+
+核心属性
+
+```javascript
+var vNodeCore = {
+  tag: "",
+  data: {},
+  children: [],
+  text: "",
+};
+
+var vNodeOptimize = {
+  key: "",
+  isStatic: bool,
+  isRootInsert: bool,
+  isClone: bool,
+};
+
+// 服务端渲染 ssr属性
+
+// 注释。异步函数，函数作用域
+```
+
+vNode 通过 createElement 创建
+
+```
+vNode => [create , diff, patch] => Dom
+```
+
+## 组件化
+
+```
+typeof tag === "string" // 创建标签，返回 vnode 
+
+createComponent // 创建组件 返回 vnode 
+```
+
+
+- installComponentHooks  // 安装组件hooks
+componentVNodeHooks
+
+
+patch
+
+
+组件的本质是JavaScript描述对象
+
+
+一个组件的 VNode 是如何创建、初始化、渲染的过程
+
+
+- mergeOptions 合并参数配置
+- 
+
+
+- 生命周期
+  - beforeCreate created
+  - beforeMount mounted
+  - beforeUpdata updated
+  - beforeDestroy destroyed
+
+```
+父子组件嵌套时候生命周期的调用顺序，
+watch computed created mounted 等等顺序呢
+```
+
+- 组件注册
+  - 全局注册 Vue.component("app", {})
+    - initAssetRegisters 
+  - 局部注册
+  - 安装方式
+
+
+- 异步组件
+  - webpack require
+  - es6 import
+  - 高级异步组件
+
+
+
+
+## 响应式过程
+
+### 需要解决的问题
+
+- 修改那块DOM
+- 最小范围修改
+- 数据和DOM绑定，只修改数据dom自动修改
+- 
+
+
+
+### initState顺序
+
+```
+initState = props => method => data => computed => watch
+```
+
+
+核心方法： Object.defineProperty
+核心函数： defineReactive
+
+
+
+由此观之
+
+- props 属性会被处理成响应式，性能优化点，通过别的方式将数据传入组件
+- 
+
+
+
+### observe 检测数据变化 
+
+Observer对象，用于给对象添加getter和setter，用于依赖收集和派发更新
+
+- 实例化Dep 对象
+- def，定对象的属性，外增加描述
+- 对对象和数组浅层处理
+
+
+```
+Observer => defineReactive  => observe
+```
+
+
+#### 依赖收集
+
+- dep.depend(); // 把当前对象放到dep实例的数组 subs 内
+- Dep.target 静态属性  全局唯一的 Watcher
+- Dep是对Watcher的管理
+
+
+
+
+##### Watcher 
+
+
+
 
 数据驱动
 
 ### 调度过程
 
 ### diff 算法
+
+### vue 常用 api，元素，使用方面的实现
+
+```javascript
+name: [
+  sayName1,
+  function (newVal, oldVal) {
+    this.sayName2();
+  },
+  {
+    handler: sayName3,
+    immaediate: true,
+  },
+];
+```
