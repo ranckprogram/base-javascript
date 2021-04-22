@@ -159,28 +159,22 @@ vNode => [create , diff, patch] => Dom
 ## 组件化
 
 ```
-typeof tag === "string" // 创建标签，返回 vnode 
+typeof tag === "string" // 创建标签，返回 vnode
 
-createComponent // 创建组件 返回 vnode 
+createComponent // 创建组件 返回 vnode
 ```
 
-
-- installComponentHooks  // 安装组件hooks
-componentVNodeHooks
-
+- installComponentHooks // 安装组件 hooks
+  componentVNodeHooks
 
 patch
 
-
-组件的本质是JavaScript描述对象
-
+组件的本质是 JavaScript 描述对象
 
 一个组件的 VNode 是如何创建、初始化、渲染的过程
 
-
 - mergeOptions 合并参数配置
-- 
-
+-
 
 - 生命周期
   - beforeCreate created
@@ -194,95 +188,100 @@ watch computed created mounted 等等顺序呢
 ```
 
 - 组件注册
+
   - 全局注册 Vue.component("app", {})
-    - initAssetRegisters 
+    - initAssetRegisters
   - 局部注册
   - 安装方式
-
 
 - 异步组件
   - webpack require
   - es6 import
   - 高级异步组件
 
-
-
-
 ## 响应式过程
 
 ### 需要解决的问题
 
-- 修改那块DOM
+- 修改那块 DOM
 - 最小范围修改
-- 数据和DOM绑定，只修改数据dom自动修改
-- 
+- 数据和 DOM 绑定，只修改数据 dom 自动修改
+-
 
-
-
-### initState顺序
+### initState 顺序
 
 ```
 initState = props => method => data => computed => watch
 ```
 
+### 数据劫持
 
 核心方法： Object.defineProperty
 核心函数： defineReactive
 
-
-
 由此观之
 
 - props 属性会被处理成响应式，性能优化点，通过别的方式将数据传入组件
-- 
+-
 
+### observe 检测数据变化
 
+Observer 对象，用于给对象添加 getter 和 setter，用于依赖收集和派发更新
 
-### observe 检测数据变化 
-
-Observer对象，用于给对象添加getter和setter，用于依赖收集和派发更新
-
-- 实例化Dep 对象
+- 实例化 Dep 对象
 - def，定对象的属性，外增加描述
 - 对对象和数组浅层处理
-
 
 ```
 Observer => defineReactive  => observe
 ```
 
-
 #### 依赖收集
 
-- dep.depend(); // 把当前对象放到dep实例的数组 subs 内
-- Dep.target 静态属性  全局唯一的 Watcher
-- Dep是对Watcher的管理
+谁使用了这个变量，都要把它存到数组里面，收集起来，一个变量 name，可能被多个地方使用
 
+- dep.depend(); // 把当前对象放到 dep 实例的数组 subs 内
+- Dep.target 静态属性 全局唯一的 Watcher
+- Dep 是对 Watcher 的管理
 
+#### Watcher
 
-
-##### Watcher 
-
-
-
+watcher 对象有哪些属性，这个对象是干嘛的，怎么工作的
 
 数据驱动
 
-### 调度过程
+#### nextTick
+
+- js 单线程，事件循环
+- flushCallbacks （刷新回调，执行回调数组中的回调）
+- MessageChannel [port1, port2][onmessage postMessage]
+- 一次性收集一批回调函数，在下次循环事件循环中执行，达到批量执行的目的，从而提高性能
+- watcher的update 连续调用n次，
+
+调用过程
+
+```javascript
+watcher.update => queueWatcher(this) => nextTick(flushSchedulerQueue) => [callbacks]timerFunc()
+```
+
+
+#### 调度过程
 
 ### diff 算法
 
 ### vue 常用 api，元素，使用方面的实现
 
 ```javascript
-name: [
-  sayName1,
-  function (newVal, oldVal) {
-    this.sayName2();
-  },
-  {
-    handler: sayName3,
-    immaediate: true,
-  },
-];
+const watch = {
+  name: [
+    sayName1,
+    function (newVal, oldVal) {
+      this.sayName2();
+    },
+    {
+      handler: sayName3,
+      immaediate: true,
+    },
+  ],
+};
 ```
