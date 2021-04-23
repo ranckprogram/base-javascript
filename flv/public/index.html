@@ -16,9 +16,10 @@
 
   <script src="./flv.min.js"></script>
 
-<script>
-  
-var player = document.getElementById('videoElement');
+  <script>
+
+    var player = document.getElementById('videoElement');
+    
     if (flvjs.isSupported()) {
       var flvPlayer = flvjs.createPlayer({
         type: 'flv',
@@ -47,7 +48,7 @@ var player = document.getElementById('videoElement');
     function flv_seekto() {
       player.currentTime = parseFloat(document.getElementsByName('seekpoint')[0].value);
     }
-</script>
+  </script>
 
 </body>
 
