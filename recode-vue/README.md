@@ -269,6 +269,8 @@ watcher.update => queueWatcher(this) => nextTick(flushSchedulerQueue) => [callba
 
 ### diff 算法
 
+- patchVnode 比对新旧两个节点
+
 ### vue 常用 api，元素，使用方面的实现
 
 ```javascript

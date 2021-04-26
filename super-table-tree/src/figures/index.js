@@ -1,0 +1,1 @@
+import {createRect} from "./createRect";
