@@ -1,4 +1,5 @@
 import { createRect } from "./figures/createRect";
+import { Table } from "./entity/table";
 import { executePosition } from "./helper";
 
 import { columns, generate } from "./test";
@@ -83,38 +84,50 @@ class SuperTreeTable {
       console.log("wheel", e);
 
       const paperPosition = self.paperPosition - e.wheelDeltaY;
-      console.log(paperPosition)
+      console.log(paperPosition);
       self.setPaperPosition(paperPosition);
     });
   }
 
-  testRender(ctx, data) {
-    console.log(123);
-  }
-
   render(ctx = this.ctx) {
-    console.log("render")
+    console.log("render");
     this.clear();
     const data = this.initData();
 
     const offset = 10;
     const width = 800;
     const height = 60;
-    data.forEach(({ position }, index) => {
-      createRect(ctx, offset, position, width, height, {
-        color: "",
-        text: "index" + index,
-      });
-    });
+    // ctx.translate(150, 550);
+
+    // data.forEach(({ position }, index) => {
+    //   createRect(ctx, offset, position, width, height, {
+    //     color: "",
+    //     text: "index" + index,
+    //   });
+    // });
+
+    const table = new Table(
+      columns,
+      data,
+      function _createRect(x, y, width, height, text) {
+        createRect(ctx, x, y, width, height, {
+          color: "",
+          text,
+        });
+      }
+    ); // 事件咋搞呢？特殊列咋搞呢？
+    console.log(Table, table);
+
+    // ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 }
 
-const data = generate(200);
+const data = generate(20);
 
 const superTreeTable = new SuperTreeTable({
   columns,
   data,
 });
 
-console.log(superTreeTable);
+console.log(superTreeTable, data);
 // superTreeTable.clear()
