@@ -46,7 +46,7 @@ export class Tr {
 export class Td {
   width = 200;
   constructor(column, row, x, y, createRect) {
-    console.log(x);
+    // console.log(x);
     this.render(column, row, x, y, createRect);
   }
 
@@ -55,7 +55,7 @@ export class Td {
   // 直接在过程中传入ctx渲染
 
   render(column, row, x, y, createRect) {
-    console.log(row);
-    createRect(x, y, column.width, 60, row[column.key]);
+    // console.log(row, column);
+    createRect(x, y, column.width, 60, row.data[column.key]);
   }
 }

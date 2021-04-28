@@ -41,16 +41,8 @@ export const columns = [
     render: (row) => {
       return {
         type: "button",
-        on: {
-          click: "handleDelete",
-        },
+        text: "编辑",
         data: row,
-        children: [
-          {
-            type: "text",
-            value: "haha",
-          },
-        ],
       };
     },
   },

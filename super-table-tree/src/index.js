@@ -3,6 +3,7 @@ import { Table } from "./entity/table";
 import { executePosition } from "./helper";
 
 import { columns, generate } from "./test";
+import { tableData } from "./test/data";
 
 const defaults = {};
 
@@ -122,12 +123,13 @@ class SuperTreeTable {
   }
 }
 
-const data = generate(20);
+// const data = generate(20);
 
 const superTreeTable = new SuperTreeTable({
   columns,
-  data,
+  data: tableData.slice(0,20),
 });
 
-console.log(superTreeTable, data);
+console.log(superTreeTable);
+console.log(tableData.length);
 // superTreeTable.clear()

@@ -254,16 +254,15 @@ watcher 对象有哪些属性，这个对象是干嘛的，怎么工作的
 
 - js 单线程，事件循环
 - flushCallbacks （刷新回调，执行回调数组中的回调）
-- MessageChannel [port1, port2][onmessage postMessage]
+- MessageChannel [port1, port2][onmessage postmessage]
 - 一次性收集一批回调函数，在下次循环事件循环中执行，达到批量执行的目的，从而提高性能
-- watcher的update 连续调用n次，
+- watcher 的 update 连续调用 n 次，
 
 调用过程
 
 ```javascript
 watcher.update => queueWatcher(this) => nextTick(flushSchedulerQueue) => [callbacks]timerFunc()
 ```
-
 
 #### 调度过程
 
@@ -286,4 +285,36 @@ const watch = {
     },
   ],
 };
+```
+
+## vue-router 
+
+### 安装过程
+
+- Vue.use 本质执行 插件中定义的install 方法， installed 作为标识，只会被安装一次
+  - beforeCreate 
+  - destoryed 
+- 定义钩子函数合并
+
+
+## vuex
+
+单向数据流
+
+- 多视图依赖于同一状态，统一管理
+- 跨组件通信
+
+### vue 特性
+
+- 全局单例模式状态
+- 只能通过 commit 显示修改状态 （直接修改 state，也是生效的，但是不推荐，且不好跟踪状态修改管理）
+-
+
+```javascript
+this.$store.state.num = this.num; // 可行但不推荐
+
+const store = new Vuex.Store({
+  // ...
+  strict: true, // 不合规范，直接报错
+});
 ```
