@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="text"></div>
+
+  <script>
+
+    var obj = {
+      name: "ranck",
+      message: "hello",
+      get text() {
+        return `${this.name},${this.message}`
+      }
+    }
+
+
+    var handler = {
+      set(obj, prop, value) {
+        console.log("before set")
+        obj[prop] = value
+
+        document.querySelector("#text").innerText = obj.text
+        console.log("after set")
+      },
+
+    }
+
+
+    var po = new Proxy(obj, handler)
+
+  </script>
+</body>
+
+</html>
