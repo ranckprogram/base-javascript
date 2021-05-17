@@ -15,14 +15,29 @@
 
     .container {
       display: flex;
-
     }
+
     .tools {
       width: 60px;
     }
-    ul,li {
+
+    ul,
+    li {
       padding: 0;
       list-style: none;
+    }
+
+    .tooltip {
+      position: absolute;
+      display: none;
+      width: 60px;
+      border: 1px solid #ddd;
+      height: 240px;
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 0 10 #ddd;
+      left: 300px;
+      top: 50px;
     }
   </style>
 </head>
@@ -30,16 +45,35 @@
 <body>
   <div class="container">
     <canvas id="canvas" width="800" height="600"></canvas>
+    <div class="tooltip" id="tooltip">
+      获取端口
+    </div>
     <div class="tools">
       <ul>
         <li>
           <button id="line">line</button>
         </li>
         <li>
-          <button>line</button>
+          <button id="switch">switch</button>
         </li>
         <li>
-          <button>line</button>
+          <button id="wifi">wifi</button>
+        </li>
+        <li>
+          <button id="cloud">cloud</button>
+        </li>
+        <li>
+          <button id="for">遍历</button>
+        </li>
+        <li>
+          <button id="delete">删除</button>
+        </li>
+        <li>
+          <button id="download">download</button>
+        </li>
+
+        <li>
+          <button id="forbid">forbid</button>
         </li>
       </ul>
     </div>
