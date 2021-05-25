@@ -2,7 +2,10 @@ import { fabric } from "fabric";
 import uuid from "node-uuid";
 import _ from "lodash";
 
-var canvas = new fabric.Canvas("canvas", { containerClass: "design" });
+var canvas = new fabric.Canvas("canvas", {
+  containerClass: "design",
+  perPixelTargetFind: true, // 按照像素来选定目标
+});
 
 // 工具栏
 document.querySelector("#switch").onclick = createSwitch;
@@ -71,15 +74,16 @@ function createWifi() {
   });
 }
 
-console.log(canvas);
+// console.log(canvas);
 
-console.log(canvas.toJSON());
-console.log(canvas.toObject());
-console.log(canvas.getActiveObjects());
+// console.log(canvas.toJSON());
+// console.log(canvas.toObject());
+// console.log(canvas.getActiveObjects());
 
 // console.log(canvas.toDataURL())
 
-document.querySelector("#save").onclick = function () {
+document.querySelector("#save").onclick = saveData;
+function saveData() {
   console.log("save data finish");
   localStorage.setItem(
     "data",
@@ -87,30 +91,67 @@ document.querySelector("#save").onclick = function () {
       canvas.toJSON(["id", "source", "sourceId", "target", "targetId"])
     )
   ); // 存入额外数据
-};
+}
 
 document.querySelector("#load").onclick = loadData;
 
 function loadData() {
   const data = localStorage.getItem("data");
   const json = JSON.parse(data);
-  // json.objects.forEach((item) => {
-  //   item.id = item.id || uuid.v4();
-  // });
-  canvas.loadFromJSON(json, canvas.renderAll.bind(canvas));
+  canvas.loadFromJSON(json, canvas.renderAll.bind(canvas)); // 异步渲染
+  lineZindex();
+}
+
+/**
+ * 无可奈何之举，
+ * - 保存后的json和刚生成的json不一样
+ * - 我现在的所有操作都是基于能存能取
+ * -
+ * 1. 统一化数据
+ * 2. 处理line的zindex
+ * 3. 线条不编辑，移动
+ */
+function saveCanvasData() {
+  canvas.loadFromJSON(
+    canvas.toJSON(["id", "source", "sourceId", "target", "targetId"])
+  );
+  lineZindex();
 }
 
 // 导出图片
 function downloadImage() {
   const a = document.createElement("a");
-  a.href = canvas.toDataURL();
+  a.href = canvas.toDataURL({
+    width: 500,
+    height: 1000,
+    left: 0,
+    top: 0,
+  });
+  // console.log(a.href)
   a.download = "topo";
   a.click();
+}
+
+document.querySelector("#linezindex").onclick = lineZindex;
+
+function lineZindex() {
+  setTimeout(() => {
+    canvas.forEachObject(function (obj) {
+      if (obj.type === "line") {
+        obj.moveTo(1);
+        obj.hasControls = false;
+        obj.selectable = false;
+      } else {
+        obj.moveTo(10);
+      }
+    });
+  }, 200);
 }
 
 let isDown = false; // 鼠标按下
 let isDraw = false; // 开始划线
 let isMoveDevice = false; // 拖动设备
+let isDragCanvas = false; // 拖拽画布
 let currentLine = new fabric.Line();
 const stack = []; // 节点栈，包括开始节点和末尾节点
 let lineList = []; // 选中的设备关联的全部连线
@@ -118,7 +159,7 @@ let linePointMap = {}; // 记录伴随移动线的固定点信息
 
 document.querySelector("#line").onclick = function () {
   isDraw = true;
-
+  isMoveDevice = false;
   toggleLockAllObj(false); // 锁掉全部拖动
 };
 
@@ -132,11 +173,11 @@ function forbid() {
  * 2. 划线以设备结束
  * 3. 划线过程中可以取消
  * 4. 划线过后可以关联线和设备
+ * 5. 设备的线不连本身
  */
 
 function clickBlack() {
   isDraw = false; // 开始划线
-  isDown = false;
   canvas.remove(currentLine);
   console.log("取消");
 }
@@ -184,30 +225,36 @@ function beginDrawLine(o) {
 }
 
 // 划线过程中
-function drawLineIng(line, o) {
+function drawLineIng(line, o, x = "x2", y = "y2") {
   var pointer = canvas.getPointer(o.e);
-  line.set({ x2: pointer.x, y2: pointer.y }); // 单线情况
+  line.set({ [x]: pointer.x, [y]: pointer.y }); // 单线情况
   canvas.renderAll();
 }
 
 // 回调： 划线完成
 function drawLineFinish(o) {
-  isDown = false;
   isDraw = false;
 
-  stack.push(o.target);
+  if (o.target && o.target.type === "image") {
+    stack.push(o.target);
 
-  const [source, target] = stack;
+    const [source, target] = stack;
 
-  currentLine.source = source;
-  currentLine.target = target;
+    currentLine.source = source;
+    currentLine.target = target;
 
-  currentLine.sourceId = source.id;
-  currentLine.targetId = target.id;
+    currentLine.sourceId = source.id;
+    currentLine.targetId = target.id;
+  } else {
+    canvas.remove(currentLine);
+  }
+
   stack.length = 0;
   console.log("划线完毕");
   currentLine = {};
   // tooltip.style.display = "block";  //
+
+  saveCanvasData();
 }
 
 /**
@@ -218,9 +265,10 @@ function drawLineFinish(o) {
  *    - 区分出线条的定点和动点
  */
 function beginMoveDevice(o) {
-  console.log(canvas.getObjects())
+  console.log(canvas.getObjects());
 
   isMoveDevice = true;
+  isDraw = false;
   collectionDeviceLines(o.target.id);
   console.log("开始拖动", lineList);
 }
@@ -232,15 +280,19 @@ function beginMoveDevice(o) {
  */
 function moveDeviceIng(o) {
   for (let lineId in linePointMap) {
-    drawLineIng(linePointMap[lineId], o);
+    drawLineIng(
+      linePointMap[lineId].line,
+      o,
+      linePointMap[lineId].xField,
+      linePointMap[lineId].yField
+    );
   }
 }
 
 function endMoveDevice() {
   isMoveDevice = false;
   linePointMap = {};
-
-  console.log(canvas.getObjects())
+  saveCanvasData();
 }
 
 // 收集当前设备连线
@@ -252,16 +304,13 @@ function collectionDeviceLines(deviceId) {
       if (obj.targetId === deviceId) {
         // 这里面的obj是指每一根和设备关联的线
 
-        console.log(obj, 222)
-
-        const { sourceId, targetId, id } = obj;
+        const { sourceId, targetId, id, source, target } = obj;
 
         const x1 = obj.x1 + obj.left;
         const y1 = obj.y1 + obj.top;
 
-
-        const x2 = obj.x2 + obj.left
-        const y2 = obj.y2 + obj.top
+        const x2 = obj.x2 + obj.left;
+        const y2 = obj.y2 + obj.top;
 
         const points = [x1, y1, x2, y2];
 
@@ -269,6 +318,8 @@ function collectionDeviceLines(deviceId) {
           id: id,
           sourceId,
           targetId,
+          source,
+          target,
           strokeWidth: 3,
           fill: "red",
           stroke: "red",
@@ -278,7 +329,7 @@ function collectionDeviceLines(deviceId) {
           hasRotatingPoint: false, //选中时是否可以旋转
         });
 
-        linePointMap[line.id] = line; // 设置当前线id， map
+        linePointMap[line.id] = { line, xField: "x2", yField: "y2" }; // 设置当前线id， map
 
         /**
          * 两个方案，二选一
@@ -293,20 +344,22 @@ function collectionDeviceLines(deviceId) {
         canvas.add(line);
       }
       if (obj.sourceId === deviceId) {
-        const { sourceId, targetId, id } = obj;
+        const { sourceId, targetId, id, source, target } = obj;
 
         const x1 = obj.x2 + obj.left;
         const y1 = obj.y2 + obj.top;
 
-        const x2 = obj.x1 + obj.left
-        const y2 = obj.y1 + obj.top
+        const x2 = obj.x1 + obj.left;
+        const y2 = obj.y1 + obj.top;
 
-        const points = [x1, y1, x2, y2];
+        const points = [x2, y2, x1, y1];
 
         const line = new fabric.Line(points, {
           id: id,
           sourceId,
           targetId,
+          source,
+          target,
           strokeWidth: 3,
           fill: "red",
           stroke: "red",
@@ -316,7 +369,11 @@ function collectionDeviceLines(deviceId) {
           hasRotatingPoint: false, //选中时是否可以旋转
         });
 
-        linePointMap[line.id] = line; // 设置当前线id， map
+        linePointMap[line.id] = {
+          line,
+          xField: "x1",
+          yField: "y1",
+        }; // 设置当前线id， map
 
         canvas.remove(obj);
         canvas.add(line);
@@ -326,7 +383,12 @@ function collectionDeviceLines(deviceId) {
 }
 
 canvas.on("mouse:up", function (o) {
-  isDown = true;
+  isDown = false;
+
+  if (isDraw && stack.length) {
+    drawLineFinish(o);
+    return;
+  }
 
   if (isMoveDevice) {
     endMoveDevice();
@@ -341,11 +403,6 @@ canvas.on("mouse:down", function (o) {
       clickBlack();
     } else {
       if (o.target.type === "image") {
-        if (isDraw && stack.length) {
-          drawLineFinish(o);
-          return;
-        }
-
         if (isDown) {
           beginDrawLine(o);
         }
@@ -361,7 +418,7 @@ canvas.on("mouse:down", function (o) {
    * 3. target 在设备上
    */
 
-  if (!isDraw && o.target) {
+  if (!isDraw && o.target && o.target.type === "image") {
     beginMoveDevice(o);
   }
 });
@@ -381,17 +438,15 @@ canvas.on("mouse:move", function (o) {
       console.log("拖动设备过程");
       return;
     }
+
+    mouseWheelEvent(o);
   }
 });
 
 document.querySelector("#for").onclick = function () {
   canvas.forEachObject(function (obj) {
-    console.log(obj);
-
-    // if (obj.type === "line") {
     obj.hasControls = false; // 控制包括，变形，移动
     obj.selectable = false; // 不可选中
-    // }
   });
 };
 
@@ -406,24 +461,22 @@ function toggleLockAllObj(lock = false) {
   });
 }
 
-canvas.on("mouse:wheel", mouseWheelEvent);
-
-const mouseWheelEvent = (e) => {
-  if (e.altKey && canvas) {
-    let zoom = (e.deltaY > 0 ? 0.05 : -0.05) + lastZoom;
-    zoom = Math.max(zoomMin, zoom);
-    zoom = Math.min(zoomMax, zoom);
-    if (zoom === lastZoom) return;
-    const [x, y] = [e.pageX, e.pageY];
-    const zoomPoint = new fabric.Point(x, y);
-    relativeMouse.x += x / zoom - x / lastZoom;
-    relativeMouse.y += y / zoom - y / lastZoom;
-    imageContainer.canvasConfig = canvasConfig;
-    imageContainer.zoomToPoint(zoomPoint, zoom);
-    lastZoom = zoom;
-  }
+document.querySelector("#move").onclick = function () {
+  isDragCanvas = !isDragCanvas;
+  canvas.selection = false;
 };
+
+function mouseWheelEvent(e) {
+  if (isDragCanvas && e && e.e) {
+    let delta = new fabric.Point(e.e.movementX, e.e.movementY);
+    canvas.relativePan(delta);
+  }
+}
 
 // canvas.isDrawingMode = true  // 自由绘制
 
 // canvas.skipTargetFind = true; // 不可选中
+
+// canvas.setZoom()
+
+console.log(canvas.viewportTransform);
