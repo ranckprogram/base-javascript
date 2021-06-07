@@ -318,3 +318,13 @@ const store = new Vuex.Store({
   strict: true, // 不合规范，直接报错
 });
 ```
+{
+validator: (rule, value, callback) => {
+    if(Number(value)%100 === 0){
+callback()
+}else {
+callback("请输入100的倍数")
+
+}
+}
+}
