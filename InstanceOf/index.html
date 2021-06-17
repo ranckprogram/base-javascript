@@ -23,6 +23,7 @@
 
       const propt = Object.getPrototypeOf(obj);
 
+
       return propt === type.prototype
 
     }
@@ -31,7 +32,10 @@
     console.log(instanceOf(1, Number))
     console.log(instanceOf({}, Object))
 
+    console.log(instanceOf(() => { }, Function))  // 应该报错
+
     console.log(instanceOf(null, Object))
+
 
 
   </script>
