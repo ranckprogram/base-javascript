@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+    function instanceOf(obj, type) {
+
+      if (typeof obj !== "object") {
+        return false
+      }
+
+      if (obj === null) {
+        throw "SyntaxError: Unexpected identifier"
+      }
+
+      const propt = Object.getPrototypeOf(obj);
+
+      return propt === type.prototype
+
+    }
+
+
+    console.log(instanceOf(1, Number))
+    console.log(instanceOf({}, Object))
+
+    console.log(instanceOf(null, Object))
+
+
+  </script>
+</body>
+
+</html>
