@@ -133,6 +133,38 @@ function breadthFirstSearchPath(graph, firstVertex) {
   };
 }
 
+function deapthFirstSearch(graph, callback) {
+  const vertices = graph.getVertices();
+  const adjList = graph.getAdjList();
+
+  const eachMap = initMark(vertices);
+
+  for (let i = 0; i < vertices.length; i++) {
+    const vertex = vertices[i];
+    if (!eachMap[vertex]) {
+      deapthFirstSearchVisible(vertex, eachMap, adjList, callback);
+    }
+  }
+}
+
+function deapthFirstSearchVisible(vertex, eachMap, adjList, callback) {
+  eachMap[vertex] = true;
+  if (typeof callback === "function") {
+    callback(vertex);
+  }
+  const neighbors = adjList.get(vertex);
+
+  for (let i = 0; i < neighbors.length; i++) {
+    const neighbor = neighbors[i];
+    if (!eachMap[neighbor]) {
+      deapthFirstSearchVisible(neighbor, eachMap, adjList, callback);
+    }
+  }
+
+  // 最深
+  // vertex
+}
+
 const graph = new Graph();
 const myVertices = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
 for (let i = 0; i < myVertices.length; i++) {
@@ -162,23 +194,6 @@ const { distances, predecessors } = breadthFirstSearchPath(graph, "A");
 
 console.log(distances, predecessors);
 
-// const fromVertex = myVertices[0];
-// // {9}
-// for (i = 1; i < myVertices.length; i++) { // {10}
-// const toVertex = myVertices[i];
-// // {11}
-// const path = new Stack(); // {12}
-//  for (let v = toVertex; v !== fromVertex; v = shortestPathA.predecessors[v])
-//  { // {13}
-//   path.push(v); // {14}
-// }
-// path.push(fromVertex); // {15}
-// let s = path.pop(); // {16}
-// while (!path.isEmpty()) { // {17}
-//   s += ' - ' + path.pop(); // {18}
-// }console.log(s); // {19}
-// }
-
 const fromVertex = myVertices[0];
 
 for (let i = 1; i < myVertices.length; i++) {
@@ -198,3 +213,9 @@ for (let i = 1; i < myVertices.length; i++) {
 
   console.log(s);
 }
+
+console.log("deapthFirstSearch, 深度优先遍历算法");
+
+deapthFirstSearch(graph, function (vertex) {
+  console.log(vertex);
+});
