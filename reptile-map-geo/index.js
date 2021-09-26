@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const params = {
-  baseUrl: "https://geo.datav.aliyun.com/areas_v2/bound/",
+  baseUrl: "https://geo.datav.aliyun.com/areas_v3/bound/",
   start: "100000",
   savePath: "geo",
 };
