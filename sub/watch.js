@@ -27,6 +27,7 @@ w.addDep(function ac() {});
 w.addDep(function ad() {});
 console.log(w);
 
+// 闭包对Watcher的实例进行二次封装
 function watch(obj, fn) {
   const w = new Watcher(obj, fn);
 
